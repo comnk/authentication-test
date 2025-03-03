@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import "./styles.css"
 
 import { authClient } from "@/lib/auth-client";
-import Link from "next/link";
 import { useState } from "react";
 
 export default function Home() {
