@@ -1,53 +1,44 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import "./styles.css"
+import { useEffect, useState } from "react";
 
-import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+export default function LoginPage() {
+  const [session, setSession] = useState<any>(null);
 
-export default function Home() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
+  useEffect(() => {
+    const getSession = async () => {
+      const res = await fetch("/api/auth/session");
+      const data = await res.json();
+      setSession(data?.user || null);
+    };
+    getSession();
+  }, []);
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError("");
+  const handleSignIn = () => {
+    window.location.href = "/api/auth/signin";
+  };
 
-    try {
-      const { error } = await authClient.signIn.social(
-        {
-          provider: "google",
-          callbackURL: "/dashboard",
-        },
-        {
-          onRequest: () => setLoading(true),
-          onSuccess: () => router.push("/dashboard"),
-          onError: (ctx) => setError(ctx.error.message || "Sign in failed"),
-        }
-      );
-
-      if (error) {
-        setError(error.message || "Sign in failed");
-      }
-    } catch {
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
+  const handleSignOut = () => {
+    window.location.href = "/api/auth/signout";
   };
 
   return (
-    <div className="app-container">
-      <button className="google-button" onClick={handleGoogleSignIn}>Continue with Google</button>
-      <form className="form-container">
-        <input type="email" placeholder="Email"/>
-        <input type="text" placeholder="Password"/>
-        <button type="submit">Submit</button>
-      </form>
-      <p>{error}</p>
-      <p>{loading}</p>
-    </div>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      {session ? (
+        <>
+          <p className="mb-4">Welcome, {session.name}</p>
+          <button onClick={handleSignOut} className="bg-red-500 text-white px-4 py-2 rounded">
+            Sign Out
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="mb-4">Please sign in</p>
+          <button onClick={handleSignIn} className="bg-blue-500 text-white px-4 py-2 rounded">
+            Sign In with Google
+          </button>
+        </>
+      )}
+    </main>
   );
 }

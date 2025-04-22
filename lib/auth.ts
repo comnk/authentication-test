@@ -1,16 +1,16 @@
 import { betterAuth } from "better-auth";
-import Database from "better-sqlite3";
-
+import { MongoClient } from "mongodb";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+ 
+const client = new MongoClient("mongodb://localhost:27017/database");
+const db = client.db();
+ 
 export const auth = betterAuth({
-  database: new Database("./sqlite.db"),
-  emailAndPassword: {
-    enabled: true,
+  socialProviders: {
+    google: { 
+        clientId: process.env.GOOGLE_CLIENT_ID as string, 
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+    }, 
   },
-  socialProviders:{
-		google: {
-			clientId: process.env.GOOGLE_CLIENT_ID || "",
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-            redirectURI: "https://authentication-test-roan.vercel.app/api/auth/callback/google"
-		},
-    }
+  database: mongodbAdapter(db),
 });
