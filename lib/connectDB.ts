@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 //const mongoPass = process.env.MONGO_PASS
 //const mongoUser = process.env. MONGO_USER
-//const DB_url = `mongodb+srv://${mongoUser}:${mongoPass}@dco-internal-tool.zyu6n.mongodb.net/DCo-Frontiers-2025?retryWrites=true&w=majority&appName=DCo-Internal-Tool`
+//const DB_url = mongodb+srv://${mongoUser}:${mongoPass}@dco-internal-tool.zyu6n.mongodb.net/DCo-Frontiers-2025?retryWrites=true&w=majority&appName=DCo-Internal-Tool
 const DB_url = process.env.DATABASE_URL
 /*if(!mongoPass){
     throw new Error(
@@ -20,7 +20,8 @@ type Cached = {
 } 
 
 declare global {
-    var mongoose: Cached;
+    // eslint-disable-next-line no-var
+    var mongoose: Cached;   
 }
 
 let cached = global.mongoose;
