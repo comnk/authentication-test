@@ -13,4 +13,22 @@ export const auth = betterAuth({
     }, 
   },
   database: mongodbAdapter(db),
+  callbacks: {
+    signIn({
+      account,
+      profile,
+    }: {
+      account: { provider: string } | null;
+      profile?: { email?: string };
+    }) {
+      if (account?.provider === "google" && profile?.email) {
+        const email = profile.email;
+        const allowedDomains = ["ucsd.edu", "eng.ucsd.edu"];
+        const domain = email.split("@")[1];
+        return allowedDomains.includes(domain);
+      }
+
+      return false;
+    },
+  },
 });
