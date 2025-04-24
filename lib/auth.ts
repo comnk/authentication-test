@@ -16,14 +16,16 @@ export const auth = betterAuth({
   database: mongodbAdapter(db),
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path !== "/login") {
-            return;
-        }
-        if (!ctx.body?.email.endsWith("@ucsd.edu")) {
-            throw new APIError("BAD_REQUEST", {
-                message: "Email must end with @example.com",
-            });
-        }
-    }),
+      console.log(ctx.path);
+
+      if (ctx.path !== "/login") {
+          return;
+      }
+      if (!ctx.body?.email.endsWith("@ucsd.edu")) {
+          throw new APIError("BAD_REQUEST", {
+              message: "Email must end with @example.com",
+          });
+      }
+  }),
 },
 });
