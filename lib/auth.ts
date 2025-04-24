@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { createAuthMiddleware, APIError } from "better-auth/api";
  
 const client = new MongoClient(process.env.DATABASE_URL as string);
 const db = client.db();
@@ -13,22 +14,16 @@ export const auth = betterAuth({
     }, 
   },
   database: mongodbAdapter(db),
-  callbacks: {
-    signIn({
-      account,
-      profile,
-    }: {
-      account: { provider: string } | null;
-      profile?: { email?: string };
-    }) {
-      if (account?.provider === "google" && profile?.email) {
-        const email = profile.email;
-        const allowedDomains = ["ucsd.edu", "eng.ucsd.edu"];
-        const domain = email.split("@")[1];
-        return allowedDomains.includes(domain);
-      }
-
-      return false;
-    },
-  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/login") {
+            return;
+        }
+        if (!ctx.body?.email.endsWith("@ucsd.edu")) {
+            throw new APIError("BAD_REQUEST", {
+                message: "Email must end with @example.com",
+            });
+        }
+    }),
+},
 });
