@@ -18,7 +18,7 @@ export const auth = betterAuth({
     before: createAuthMiddleware(async (ctx) => {
       console.log(ctx.path);
 
-      if (ctx.path !== "/login") {
+      if (ctx.path !== "/sign-in/social") {
           return;
       }
       if (!ctx.body?.email.endsWith("@ucsd.edu")) {
